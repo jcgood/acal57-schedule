@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ACAL 57 / Bantoid 3 Schedule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Open Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  color: #222;
+  background: #EEDD9D;
+}
+
+/* ---- CSS-only tab switching (radio button trick) ---- */
+.tab-wrapper > input[type="radio"] { display: none; }
+
+.tab-nav {
+  display: flex;
+  border-bottom: 2px solid #A08830;
+  position: sticky;
+  top: 0;
+  background: #EEDD9D;
+  z-index: 10;
+  padding: 0 0.5rem;
+  gap: 0.25rem;
+  font-family: 'Bungee Shade', cursive;
+}
+
+.tab-nav label {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  color: #111;
+  white-space: nowrap;
+  margin-bottom: -2px;
+}
+.tab-nav label:hover { background: #D9C97A; }
+
+.tab-pane { display: none; padding: 1rem 0.75rem; max-width: 1200px; margin: 0 auto; }
+
+#tab-acal:checked   ~ .tab-nav label[for="tab-acal"],
+#tab-banto:checked  ~ .tab-nav label[for="tab-banto"],
+#tab-poster:checked ~ .tab-nav label[for="tab-poster"] {
+  border-color: #A08830;
+  border-bottom-color: #EEDD9D;
+  color: #111;
+  background: #EEDD9D;
+}
+
+#tab-acal:checked   ~ #pane-acal,
+#tab-banto:checked  ~ #pane-banto,
+#tab-poster:checked ~ #pane-poster { display: block; }
+
+/* ---- Day headers ---- */
+.day-header {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: 'Bungee Shade', cursive;
+  color: #111;
+  margin: 1.5rem 0 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid #111;
+}
+
+/* ---- Standalone events (plenaries, breaks, etc.) ---- */
+.event {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.45rem 0.75rem;
+  background: #D9C97A;
+  border-radius: 4px;
+  margin: 0.4rem 0;
+}
+
+.slot-time {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+}
+
+.event-title    { font-weight: 600; font-size: 1rem; }
+.event-subtitle { font-style: italic; color: #333; font-size: 0.9rem; }
+.event-location { font-size: 0.875rem; color: #333; }
+
+/* ---- Collapsible time slots ---- */
+details.time-slot {
+  margin: 0.5rem 0;
+  border: 1px solid #A08830;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+details.time-slot > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  background: #D9C97A;
+  font-weight: 600;
+  user-select: none;
+  flex-wrap: wrap;
+}
+details.time-slot > summary::-webkit-details-marker { display: none; }
+
+details.time-slot > summary::before {
+  content: "▶";
+  font-size: 0.7rem;
+  color: #111;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+details.time-slot[open] > summary::before { transform: rotate(90deg); }
+
+details.time-slot > summary .slot-time     { color: #111; }
+details.time-slot > summary .session-label { font-weight: 700; color: #111; }
+details.time-slot > summary .session-count { color: #333; font-weight: 400; font-size: 0.9rem; }
+details.time-slot > summary a.session-link { color: #111; }
+
+/* ---- Sessions table with horizontal scroll ---- */
+.sessions-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.5rem;
+}
+
+/* Wide screens: table fills available width (proportional columns, no forced scroll).
+   Narrow screens: min-width causes overflow, triggering the horizontal scroll on .sessions-wrap.
+   border-collapse: separate is required so border-radius works on individual cells. */
+.sessions-table {
+  border-collapse: separate;
+  border-spacing: 8px 0;
+  width: 100%;
+}
+
+/* Time-of-day column — fixed narrow width, no box */
+.sessions-table .col-time {
+  width: 5rem;
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+  color: #111;
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: none;
+}
+
+/* Session-name header cells — top of the per-column rounded box */
+.sessions-table .col-session {
+  min-width: 200px;
+  padding: 0.5rem 0.6rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #111;
+  background: #C8B45E;
+  border: 1px solid #A08830;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  text-align: left;
+  vertical-align: top;
+}
+.sessions-table .col-session a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+.sessions-table .col-session a:hover { text-decoration: underline; }
+
+/* Session title (folded in below session ID with <br/>) */
+.sessions-table .session-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #111;
+}
+
+/* Sub-header rows (room, chair, tech): left+right borders only, no top/bottom */
+.sessions-table .session-rooms-row  td:not(:first-child),
+.sessions-table .session-chairs-row td:not(:first-child),
+.sessions-table .session-techs-row  td:not(:first-child) {
+  font-size: 0.875rem;
+  padding: 0.15rem 0.6rem;
+  background: #D9C97A;
+  border-top: none;
+  border-bottom: none;
+  border-left: 1px solid #A08830;
+  border-right: 1px solid #A08830;
+}
+.sessions-table .session-rooms-row  td:not(:first-child) { color: #222; }
+.sessions-table .session-chairs-row td:not(:first-child) { color: #222; }
+.sessions-table .session-techs-row  td:not(:first-child) { color: #222; }
+.sessions-table .session-rooms-row  td:first-child,
+.sessions-table .session-chairs-row td:first-child,
+.sessions-table .session-techs-row  td:first-child { border: none; }
+
+/* Talk cells: left+right borders, no top/bottom (box sides continue down from header) */
+.sessions-table .col-talk {
+  min-width: 200px;
+  padding: 0.35rem 0.6rem;
+  vertical-align: top;
+  border-top: none;
+  border-bottom: none;
+  border-left: 1px solid #A08830;
+  border-right: 1px solid #A08830;
+}
+
+/* Last talk row closes the box with bottom border and rounded corners */
+.sessions-table tbody tr:last-child .col-talk {
+  border-bottom: 1px solid #A08830;
+  border-radius: 0 0 6px 6px;
+}
+
+.sessions-table .col-talk-empty  { background: #EEDD9D; }
+.sessions-table .col-talk-remote { background: #BBA040; }
+
+/* Horizontal separator between time slots */
+.sessions-table .talk-row:not(:first-child) td {
+  border-top: 1px solid #C8B45E;
+}
+
+/* Talks inside table cells */
+.sessions-table .talk {
+  margin: 0;
+  padding: 0;
+  border-top: none;
+  font-size: 0.88rem;
+}
+
+/* ---- Talk entries (shared between table and any other context) ---- */
+.talk {
+  display: flex;
+  flex-direction: column;
+  margin: 0.4rem 0;
+  padding: 0.35rem 0;
+  border-top: 1px solid #C8B45E;
+  font-size: 0.9rem;
+}
+.talk:first-of-type { border-top: none; }
+
+.talk-author {
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.15rem;
+}
+.talk-title           { color: #222; line-height: 1.4; }
+.talk-title a         { color: #005a9e; text-decoration: underline; }
+.talk-title a:visited { color: #5a189a; }
+
+.remote-tag {
+  display: inline-block;
+  margin-left: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  background: #6A5500;
+  color: #fff;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---- Poster table ---- */
+.poster-session { margin: 1rem 0 2rem; }
+
+.poster-session-header {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111;
+  margin: 1rem 0 0.5rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid #A08830;
+}
+.poster-timing {
+  font-size: 0.88rem;
+  color: #222;
+  margin: 0.1rem 0 0.6rem;
+  line-height: 1.5;
+}
+.poster-timing-note {
+  font-style: italic;
+  color: #333;
+}
+
+.poster-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.poster-table th {
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  background: #C8B45E;
+  border-bottom: 2px solid #111;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.poster-table td {
+  padding: 0.4rem 0.5rem;
+  vertical-align: top;
+  border-bottom: 1px solid #C8B45E;
+}
+.poster-table tr:last-child td { border-bottom: none; }
+
+.poster-num     { white-space: nowrap; font-weight: 600; color: #222; width: 3.5rem; }
+.poster-authors { width: 30%; color: #222; }
+.poster-title a         { color: #005a9e; text-decoration: underline; }
+.poster-title a:visited { color: #5a189a; }
+.poster-row.remote      { background: #BBA040; }
+
+/* ---- Tab intro note ---- */
+.tab-note {
+  margin: 0.75rem 0 1rem;
+  padding: 0.6rem 0.9rem;
+  background: #D9C97A;
+  border-left: 3px solid #111;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.9rem;
+  color: #222;
+  line-height: 1.5;
+}
+
+/* ---- Narrow-display scroll hint (shown only when session is open) ---- */
+@media (max-width: 700px) {
+  details.time-slot.has-parallel[open] > summary::after {
+    content: "Scroll right for more sessions →";
+    display: block;
+    width: 100%;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #333;
+    margin-top: 0.2rem;
+  }
+}
+
+/* ---- Poster-tab navigation link inside event blocks ---- */
+.poster-tab-link {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #005a9e;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.poster-tab-link:hover { color: #003d6b; }
+
+/* ---- Cancelled / withdrawn entries ---- */
+.talk-cancelled { opacity: 0.5; }
+.talk-cancelled .talk-author,
+.talk-cancelled .talk-title { color: #444; }
+.poster-cancelled td { opacity: 0.5; color: #444; }
+
+@media (max-width: 600px) {
+  .poster-table thead { display: none; }
+  .poster-table tr {
+    display: block;
+    margin-bottom: 0.75rem;
+    border: 1px solid #A08830;
+    border-radius: 4px;
+    padding: 0.5rem;
+  }
+  .poster-table td    { display: block; border: none; padding: 0.1rem 0; }
+  .poster-num         { font-size: 0.8rem; }
+  .poster-authors     { font-size: 0.85rem; }
+}
+  </style>
+</head>
+<body>
+  <div class="tab-wrapper">
+    <input type="radio" id="tab-acal"   name="schedule-tab">
+    <input type="radio" id="tab-banto"  name="schedule-tab" checked>
+    <input type="radio" id="tab-poster" name="schedule-tab">
+    <nav class="tab-nav">
+      <label for="tab-banto">Bantoid 3</label>
+      <label for="tab-acal">ACAL 57 Talks</label>
+      <label for="tab-poster">Posters</label>
+    </nav>
+<div id="pane-banto" class="tab-pane">
+  <p class="tab-note">Zoom links can be found near the session/talk locations. Please use the password which was sent to registered attendees to access these links. Remote talks to be given over Zoom are indicated with different shading.</p>
+  <h2 class="day-header">Wednesday, May 20</h2>
+  <div class="event">
+    <time class="slot-time">8:00–8:30 AM</time>
+    <strong class="event-title">Registration:</strong>
+    <span class="event-location">CTRC Atrium</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">8:30–9:00 AM</time>
+    <strong class="event-title">Welcoming remarks</strong>
+    <span class="event-location">CTRC 5019 - Zoom TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">9:00–10:00 AM</time>
+    <strong class="event-title">Plenary 1: Bruce Connell</strong>
+    <span class="event-subtitle">Exploring the Bantoid–Cross River Connection</span>
+    <span class="event-location">CTRC 5019 - Zoom TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">10:00–10:30 AM</time>
+    <strong class="event-title">Coffee break</strong>
+    <span class="event-location">CTRC Atrium</span>
+  </div>
+  <details class="time-slot">
+    <summary><a href="https://drive.google.com/drive/folders/1jMRutMH1LRZ0xx1R5jzmNaXe1G1_C1cR" target="_blank" rel="noopener" class="session-link">Session 1</a></summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session"><a href="https://drive.google.com/drive/folders/1jMRutMH1LRZ0xx1R5jzmNaXe1G1_C1cR" target="_blank" rel="noopener">Session 1<br/><span class="session-title">Noun morphology</span></a></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">CTRC 5019A - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>10:30–11:00 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Rebecca Paterson</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1PCrmhBceUiuKnn9yKm_YJrhBmqQzKX2O/view" target="_blank" rel="noopener">Patterns of noun class system renewal across Kainji</a></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>11:00–11:30 AM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Rachel Robinson</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/12mt_ZZOgYX6faar8nucjN0dLrRzKV59e/view" target="_blank" rel="noopener">Grammaticalisation of the lexeme ‘children’ to innovate new noun class prefix in Chopechop (Bamali), with reference to related phenomena in other Grassfields Bantu languages</a> <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>11:30 AM–12:00 PM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Michael Terhemen Angitso, Solange Mekamgoum &amp; Roland Kießling</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1HDT4ebhgfCXLiBUd-jobigwEDTKDkmO0/view" target="_blank" rel="noopener">Towards a typology of emergent numeral classifier systems in Bantoid</a> <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>12:00–12:30 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jeffrey Wills &amp; David Etta</strong>
+                <span class="talk-title">Bendic nominal morphology</span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <div class="event">
+    <time class="slot-time">12:30–2:00 PM</time>
+    <strong class="event-title">Lunch break</strong>
+  </div>
+  <div class="event">
+    <time class="slot-time">2:00–3:00 PM</time>
+    <strong class="event-title">Plenary 2: Hugues Carlos Gueche Fotso</strong>
+    <span class="event-subtitle">Coordination in Nda&#x27;nda&#x27; (Batoufam): A Syntax-Semantics Interface Perspective with Comparative Notes from Grassfields Bantu</span>
+    <span class="event-location">CTRC 5019 - Zoom TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">3:00–4:00 PM</time>
+    <strong class="event-title">Poster session (with coffee/snacks)</strong>
+    <span class="event-subtitle">CTRC Atrium</span>
+    <span class="event-location">See Poster Session Assignments Tab for details</span>
+    <label for="tab-poster" class="poster-tab-link">View poster schedule →</label>
+  </div>
+  <details class="time-slot">
+    <summary>Session 2</summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 2<br/><span class="session-title">Morphology</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">CTRC 5019A - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>4:00–4:30 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Nicholas Rolle</strong>
+                <span class="talk-title">The MPaNCA Project: Findings in the noun class morphomics of Bantoid</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>4:30–5:00 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Pius W. Akumbu &amp; Jeffrey Wills</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/19rQ3_9nz_O2Fgpx69UA63fJTJlqS9lWk/view" target="_blank" rel="noopener">Concord and prefix interaction in Bantoid: The case of class 7 kV- and a-</a></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>5:00–5:30 PM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Michael Terhemen Angitso &amp; Roland Kießling</strong>
+                <span class="talk-title">Associative plurals in Tiv <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>5:30–6:00 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Elisabeth J. Kerr &amp; Maarten Mous</strong>
+                <span class="talk-title">The Bantoid diminutive verbal suffix in a comparative and typological perspective</span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <h2 class="day-header">Thursday, May 21</h2>
+  <div class="event">
+    <time class="slot-time">8:30–9:00 AM</time>
+    <strong class="event-title">Registration:</strong>
+    <span class="event-location">Location TBD</span>
+  </div>
+  <details class="time-slot">
+    <summary>Session 3</summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 3<br/><span class="session-title">Historical-comparative linguistics</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">CTRC 7002 - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>9:00–9:30 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jordan Chiantelli-Mosebach, Christopher R. Green &amp; Rebecca Grollemund</strong>
+                <span class="talk-title">On the Lame and Jaku-Gubi sub-groups of Jarawan: Conservative structures, distant connections</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>9:30–10:00 AM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Roger Blench</strong>
+                <span class="talk-title">Rethinking the classification of ‘South Jukunoid’ <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>10:00–10:30 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Nelson C. Tschonghongei</strong>
+                <span class="talk-title">Agghan native authority; A caged chiefdom in Lower Fungom</span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <details class="time-slot">
+    <summary>Session 4</summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 4<br/><span class="session-title">Potpourri</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">CTRC 7002 - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>11:00–11:30 AM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Timothy Terna &amp; Roger Blench</strong>
+                <span class="talk-title">Introduction to the Gãã language <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>11:30–12:00 NOON</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Kathryn Franich</strong>
+                <span class="talk-title">Multimodal cues to prosodic prominence in Medʉmba and Babanki</span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</div>
+<div id="pane-acal" class="tab-pane">
+  <p class="tab-note">Zoom links can be found near the session/talk locations. Please use the password which was sent to registered attendees to access these links. Remote talks to be given over Zoom are indicated with different shading.</p>
+  <h2 class="day-header">Thursday, May 21</h2>
+  <div class="event">
+    <time class="slot-time">12:00–12:30 PM</time>
+    <strong class="event-title">Registration</strong>
+    <span class="event-location">Location TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">12:30–1:00 PM</time>
+    <strong class="event-title">Opening remarks</strong>
+    <span class="event-location">MSB 220 - Zoom TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">1:00–2:00 PM</time>
+    <strong class="event-title">Plenary 1: Rebecca Grollemund</strong>
+    <span class="event-subtitle">Regular and irregular sound changes in Bantu languages of Central Africa: Significance and historical implications</span>
+    <span class="event-location">MSB 1220 - Zoom TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">2:00–2:15 PM</time>
+    <strong class="event-title">Coffee Break (15 min)</strong>
+    <span class="event-location">Location TBD</span>
+  </div>
+  <details class="time-slot has-parallel">
+    <summary><span class="session-label">Session 1</span> <time class="slot-time">2:15–4:15 PM</time> <span class="session-count">5 parallel sessions</span></summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session"><a href="https://drive.google.com/drive/folders/1GpQ-qtvq4dkUZOfAcP3IjLHdV-EqWlqH" target="_blank" rel="noopener">Session 1A<br/><span class="session-title">Syntax: clitics, resumptives &amp; agreement</span></a></th>
+            <th class="col-session"><a href="https://drive.google.com/drive/folders/1IZe6wzOiijBjjU-B0GiPOeggGTdrBHek" target="_blank" rel="noopener">Session 1B<br/><span class="session-title">Semantics: (in)definites</span></a></th>
+            <th class="col-session"><a href="https://drive.google.com/drive/folders/1itNI75kGCIeU3cYBlQXwQjlXUmr2pE8B" target="_blank" rel="noopener">Session 1C<br/><span class="session-title">Consonants I: phonetics</span></a></th>
+            <th class="col-session"><a href="https://drive.google.com/drive/folders/1yUsV9wfUbfbOTA6l53KLsI6ihF_Zu3-M" target="_blank" rel="noopener">Session 1D<br/><span class="session-title">Banto3d: Sociocultural linguistics</span></a></th>
+            <th class="col-session"><a href="https://drive.google.com/drive/folders/1ZIC6lMtQGSvO9MtKWijfk6lgNX7Ccozo" target="_blank" rel="noopener">Session 1E<br/><span class="session-title">Phonology I: tone</span></a></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">MSB 1220 - Zoom TBD</td>
+            <td class="session-room">MSB 1110 - Zoom TBD</td>
+            <td class="session-room">MSB 1111 - Zoom TBD</td>
+            <td class="session-room">MSB 1228 - Zoom TBD</td>
+            <td class="session-room">MSB 1112A - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>2:15–2:45 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Usama Soltan</strong>
+                <span class="talk-title">On the morphosyntax of exophoric demonstratives in two Arabic varieties</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Dinah Adom Mac-Arthur</strong>
+                <span class="talk-title">Definiteness in Avatime</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Vincent Nwosu &amp; Kathryn Franich</strong>
+                <span class="talk-title">Acoustic Analysis of Implosives in Igbo</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Emilisco Jones Enoachuo &amp; Gratien Gualbert Atindogbe</strong>
+                <span class="talk-title">Refusal strategies in Nyang: Pragmatic variation, power, and social negotiation <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Fisher Moore &amp; Michael R. Marlo</strong>
+                <span class="talk-title">Verbal tone in Mwĩmbĩ: A preliminary investigation</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>2:45–3:15 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Anthony Amissah &amp; Hamid Ouali</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1-9t0fFdPkDN9TX-ulSHMUVOJetr7HdYu/view" target="_blank" rel="noopener">On Akan Pronominal Continuum: Strong Pronouns, Weak Pronouns, and Pronominal Clitics</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Carla Bombi &amp; Dinah Adom Mac-Arthur</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1QVBiQXMBjUPkkoZRhdWDrkboFfcVX7_g/view" target="_blank" rel="noopener">Quasi-names in Akan: New semantic fieldwork on definite bare nouns</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Katherine Russell &amp; Hannah Sande</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/16D212CQxj2vPJzymWI_FuKR62KjLCtWa/view" target="_blank" rel="noopener">Two typologically distinct nasality systems in West Africa: A nasal and oral airflow study of Atchan (Kwa) and Guébie (Kru)</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Levi Ekwa Mokake, Esther Phubon Chie &amp; Clovis Nkwain Ndicia</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1Z2_RcDNq5JCQQvrpnazPZItnfoJWjm0a/view" target="_blank" rel="noopener">Kom snake symbolism: A critical discourse analysis of power dynamics and cultural implications</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Lee Bickmore</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1AuMEaE-oXwAFCx3SShlpe_qloYo1beSA/view" target="_blank" rel="noopener">Kiwoso Chaga Verbal Tonology</a></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>3:15–3:45 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Olabode Adedeji &amp; Ka-Fai Yip</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1GhwGI3K5koDhb-Ta-DcUCZy-PN_Cotyc/view" target="_blank" rel="noopener">A partial Copy Deletion account of non-agreeing resumptive pronouns in Yorùbá</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Adelaide Appiah Banafo</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1eRoT92ToTOWS65FkMEh11G-tv8dDx5fK/view" target="_blank" rel="noopener">Existential Bases of Negative Indefinites and Polarity Items in Buli, Ga, Dagbani, and Akan</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Matthew Faytak, Ahmed Alzahrani, Xiaotian Liu, John Pokorski, Siobhan Spies, Mariana Quintana Godoy, Tianle Yang &amp; Abigail Dalhatu</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1uRJ5fs4j8eqAgZPbmRvIHMTQV2fB-D6k/view" target="_blank" rel="noopener">Nasal aerodynamics of the Gbagyi syllable</a></span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk talk-cancelled">
+                <strong class="talk-author"><s>Prasidis Nain Wainkem &amp; Clovis Nkwain Ndicia</s></strong>
+                <span class="talk-title"><s>Narrating identity: Language and cultural heritage in Kom folklore</s></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Richard Nyamahanga</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1kdR62IuHj9q10bZFX6WR7qJEmBxIzBtH/view" target="_blank" rel="noopener">Tonal Distribution in Kihehe</a></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>3:45–4:15 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Lateef Adeleke, Moyinoluwa David Ekundayo &amp; Kayode Solomon Gbenga</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/14gSmCGt1UK5FNRoMcV7ceN78OIkFkFDb/view" target="_blank" rel="noopener">Reflexes of A-Bar movements in Uhami</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Alice Lee-Kleinberg</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1PhuWkCp3rulY5adBKJaxGR9p8GnWnxRc/view" target="_blank" rel="noopener">The semantics of definiteness in Amharic</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Wm. G. Bennett, Aaron Braver &amp; Didier Demolin</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1XhfD8a27Av88iKD8P-4E6cJav5itsY6s/view" target="_blank" rel="noopener">On the EGG signature of clicks in South African languages</a></span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Tabe Florence Oben</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1w9nlEI3U1Mzb7vpwXoLST1mhdpK1mG5K/view" target="_blank" rel="noopener">Changing the narrative of a belief system through language contact: A study of the belief in multiple souls among the Banyangs of Manyu, Cameroon</a> <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Pius W. Akumbu</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1OKA05AgU-kvlQu3Lt3p4pQ9giqWg8Xw8/view" target="_blank" rel="noopener">Low tone anticipatory spreading in Babanki: A typological anomaly</a></span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <div class="event">
+    <time class="slot-time">4:15–4:30 PM</time>
+    <strong class="event-title">Coffee Break (15 min)</strong>
+    <span class="event-location">Location TBD</span>
+  </div>
+  <details class="time-slot has-parallel">
+    <summary><span class="session-label">Session 2</span> <time class="slot-time">4:30–6:30 PM</time> <span class="session-count">5 parallel sessions</span></summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 2A<br/><span class="session-title">A-movement</span></th>
+            <th class="col-session">Session 2B<br/><span class="session-title">Suprasegmental phonetics</span></th>
+            <th class="col-session">Session 2C<br/><span class="session-title">Argument structure &amp; nominal morphosyntax</span></th>
+            <th class="col-session">Session 2D<br/><span class="session-title">Phonology II</span></th>
+            <th class="col-session">Session 2E<br/><span class="session-title">Variation and change</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">MSB 1220 - Zoom TBD</td>
+            <td class="session-room">MSB 1110 - Zoom TBD</td>
+            <td class="session-room">MSB 1111 - Zoom TBD</td>
+            <td class="session-room">MSB 1228 - Zoom TBD</td>
+            <td class="session-room">MSB 1112A - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>4:30–5:00 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jane Loney</strong>
+                <span class="talk-title">Zulu Quantifier Float Diagnoses Movement Paths</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Kathryn Franich</strong>
+                <span class="talk-title">Co-Speech Gesture and Phonology Development in Medʉmba-French Bilingual Children</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Isaac Warren</strong>
+                <span class="talk-title">Morphosyntax of Avatime reduplicating nominalizations</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Brakson Ping</strong>
+                <span class="talk-title">An OT Analysis of Vowel Coalescence in Dzə</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Adam An &amp; Jean Paul Ngoboka</strong>
+                <span class="talk-title">Stable variation evidences language-internal facilitatory effects for morphosyntactic change in Kinyarwanda</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>5:00–5:30 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ruth Kramer &amp; Matthew Hewett</strong>
+                <span class="talk-title">Investigating a Cross-Clausal A-Dependency in Amharic: Evidence for Object Control</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Elizabeth Zsiga</strong>
+                <span class="talk-title">Vowel Assimilation and Tonal Timing in Igbo</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Mikayla Oliver &amp; Arsalan Kahnemuyipour</strong>
+                <span class="talk-title">The distributional patterns of the Swahili connective morpheme -a</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Adebayo Olalekan Malik</strong>
+                <span class="talk-title">Hiatus Resolution in Ì̩yí̩nnó̩: DEEs and Edge-Protected Vowels</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ememobong Udoh &amp; Eno-Abasi Urua</strong>
+                <span class="talk-title">An isoglossic analysis of PRO-NOCONTOUR tonal change in some Central Lower Cross speech communities</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>5:30–6:00 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Patrick Kinchsular &amp; Juvénal Ndayiragije</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1F6WVu5HO9-K4ND4oweoxRdSFSKmXvE2N/view" target="_blank" rel="noopener">Hypo-raising in Kirundi</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Elisabeth J. Kerr</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1G7F1RDDFjMEFV-ecY6o-7sMoja1AHGIx/view" target="_blank" rel="noopener">Testing for phonetic correlates of stem-initial prominence in Mbam Bantu</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Milena Šereikaitė</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1I6275GwD0g9h9Hj4cSu0HWRpEp2x-DPm/view" target="_blank" rel="noopener">Impersonals in Ndebele</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Joseph Owoyele Oluwasegun</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1jvXMqg23-ZACGOY1muC-Db_6aRLHxClO/view" target="_blank" rel="noopener">Vowel Deletion and Insertion in Ukue: An Optimality Approach</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jeffrey Wills</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1Cez9UIPAg-HL10gYdDhWdLM___Mx8_2b/view" target="_blank" rel="noopener">How to make irregular nouns in Bantoid</a></span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>6:00–6:30 PM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Vicki Carstens</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/10UeOcWofyZ3g6L7YBFPLS9XiR9hMcMpV/view" target="_blank" rel="noopener">Zulu Scope Rigidity as Superiority</a> <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jackson Kellogg</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1Wx99qJje602J2iyXOfyePcBbQFxgTF_t/view" target="_blank" rel="noopener">Considering evidence for word stress via intonational peak alignment in Amharic</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Olivia Ndapo</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1Uhj7R-22zDB7kVM_CJBw7BhFmyz3RCKs/view" target="_blank" rel="noopener">Oshingandjera (Oshiwambo) Passive: Projecting the Implicit Argument</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ebube Blessing Chukwukaeme</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1KLJR5PG7OSvhBE73xxsFdb74235G6Qzo/view" target="_blank" rel="noopener">Long distance coronal labialization in the Ekwulu dialect of Igbo</a></span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Nafisa Rashid</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1MX2S5CXqtNzlJBEYQlyEAJwF5oIEmKrq/view" target="_blank" rel="noopener">An Insight into Accent Shifting through Vowel Monophthongization in the Ghanaian-American Singer Amaarae</a> <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <div class="event">
+    <time class="slot-time">7:00-???</time>
+    <strong class="event-title">Grad Student Mixer</strong>
+    <span class="event-location">MSB 1220</span>
+  </div>
+  <h2 class="day-header">Friday, May 22</h2>
+  <div class="event">
+    <time class="slot-time">8:00–8:30 AM</time>
+    <strong class="event-title">Breakfast &amp; Registration</strong>
+    <span class="event-location">Location TBD</span>
+  </div>
+  <details class="time-slot has-parallel">
+    <summary><span class="session-label">Session 3</span> <time class="slot-time">8:30–10:30 AM</time> <span class="session-count">5 parallel sessions</span></summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 3A<br/><span class="session-title">Syntax &amp; discourse</span></th>
+            <th class="col-session">Session 3B<br/><span class="session-title">Child speech &amp; language acquisition</span></th>
+            <th class="col-session">Session 3C<br/><span class="session-title">Copula constructions</span></th>
+            <th class="col-session">Session 3D<br/><span class="session-title">Focus, questions &amp; complementizers</span></th>
+            <th class="col-session">Session 3E<br/><span class="session-title">Historical linguistics</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">MSB 1220 - Zoom TBD</td>
+            <td class="session-room">MSB 2213A - Zoom TBD</td>
+            <td class="session-room">MSB 1110 - Zoom TBD</td>
+            <td class="session-room">MSB 1225A - Zoom TBD</td>
+            <td class="session-room">MSB 1225B - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>8:30–9:00 AM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Katya Aplonova</strong>
+                <span class="talk-title">Do serial verb constructions have a discursive function: insight from the Multimedia Corpus of Ginyanga (Kwa) <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Rebecca Dufie Bonney</strong>
+                <span class="talk-title">Talking to Children in their L1 Matters: Lasting ATR Harmony in Akan Heritage Speakers</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Wakweya Olani Gobena</strong>
+                <span class="talk-title">Predicative possession constructions in Sheko (Omotic)</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Miracle Oppong Peprah</strong>
+                <span class="talk-title">Interrogative Constructions in Burak: An Adamawa Language of Nigeria</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ella Johnson, Jonathan Bass, Joe Gilmour &amp; Gérard Philippson</strong>
+                <span class="talk-title">Proto-Bantu *k and *g in Central-Western Bantu: New insights for Bantu classification</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>9:00–9:30 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Adam An</strong>
+                <span class="talk-title">Phrase-finality is (anti)focal: reexamining the Kinyarwanda conjoint-disjoint alternation</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Laura McPherson &amp; Linh Pham</strong>
+                <span class="talk-title">Postlexical tone lags behind grammatical tone in L1 acquisition: Evidence from Seenku</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Doris L. Payne</strong>
+                <span class="talk-title">To Be Somewhere or to Exist?</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Michael Obiri-Yeboah, Travis Major &amp; Sharon Rose</strong>
+                <span class="talk-title">Prosodic phrasing of topic and focus in Gua: the role of the focus particle</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Samuel Curnes</strong>
+                <span class="talk-title">Reconstructing a Copula in Great Lakes Bantu</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>9:30–10:00 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Xiaoxing Yu &amp; Michael Diercks</strong>
+                <span class="talk-title">Object marking in Llogoori</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Matthew Ajibade &amp; Samuel Obeng</strong>
+                <span class="talk-title">Gradient Effects of Early Phonological Experience on Yoruba Labial-Velar Stop Perception</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Mary Amaechi</strong>
+                <span class="talk-title">On binominal copular clauses in Yoruba <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Blake Lehman, Travis Major &amp; Harold Torrence</strong>
+                <span class="talk-title">The Syntax of the Modal Complementizer in Avatime</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Kenneth S. Olson</strong>
+                <span class="talk-title">Tone Split and H-Lowering in Suma (Gbaya) nominals</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>10:00–10:30 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Justine Mukhwana Sikuku</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1_6cy4BH9I9RWEhYkcTwzPwQzkRyYpQhw/view" target="_blank" rel="noopener">Towards a unified account of reflexive and object marking in Bantu: Exploring the interplay of agreement, cliticization, and discourse contexts in Lubukusu</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Felix Kpogo</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1YwlxBXbf6uVU_DwJP3kBl_dsC-fC8Ge4/view" target="_blank" rel="noopener">Bilingual Experience Shapes Coarticulation in Ga Complex-Simplex Stop Contrasts in Children</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Daniel Aremu &amp; Samuel Owoahene Acheampong</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1cHIPnKtsb-tkItDJn80XV42XAux8XY04/view" target="_blank" rel="noopener">(Pseudo)-sluicing in Likpakpaanl and the Isomorphic condition</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Zhixian Huang</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/12Mx0gYwLtWmWuEvcGDlm8PABiqDR33nP/view" target="_blank" rel="noopener">Obligatory subject pronoun displacement in Pulaar</a></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Irina Monich</strong>
+                <span class="talk-title"><a href="https://drive.google.com/file/d/1UYdjv5nG4Nix7Iy4JmWV2fNjWgSvZGDf/view" target="_blank" rel="noopener">Role of foot preservation in the development of Western Nilotic morphology</a></span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <div class="event">
+    <time class="slot-time">10:30–10:45 AM</time>
+    <strong class="event-title">Coffee Break (15 min)</strong>
+    <span class="event-location">Location</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">10:45–11:45 AM</time>
+    <strong class="event-title">Plenary 2: Francis Egbokhare</strong>
+    <span class="event-subtitle">Stress-Tone Interoperability and Tonal typologies in Nigerian English, Naija (Nigerian Pidgin) and Edoid Languages</span>
+    <span class="event-location">MSB 1220 - Zoom TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">11:45 AM–1:15 PM</time>
+    <strong class="event-title">Lunch break</strong>
+  </div>
+  <details class="time-slot has-parallel">
+    <summary><span class="session-label">Session 4</span> <time class="slot-time">1:15–2:45 PM</time> <span class="session-count">5 parallel sessions</span></summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 4A<br/><span class="session-title">Noun class &amp; agreement</span></th>
+            <th class="col-session">Session 4B<br/><span class="session-title">TAM morphology</span></th>
+            <th class="col-session">Session 4C<br/><span class="session-title">Lexical meaning &amp; categories</span></th>
+            <th class="col-session">Session 4D<br/><span class="session-title">Computational methods</span></th>
+            <th class="col-session">Session 4E<br/><span class="session-title">Language &amp; culture</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">MSB 1220 - Zoom TBD</td>
+            <td class="session-room">MSB 2213A - Zoom TBD</td>
+            <td class="session-room">MSB 1110 - Zoom TBD</td>
+            <td class="session-room">MSB 1225A - Zoom TBD</td>
+            <td class="session-room">MSB 1225B - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: Matthew Faytak</td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>1:15–1:45 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Madeline Ladore</strong>
+                <span class="talk-title">Agreement mismatch in Logba (Ikpana)</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Aaron Lener</strong>
+                <span class="talk-title">Clause-final negation and Polarity Phrase in Jhar</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Evgeniya Gutova</strong>
+                <span class="talk-title">Qualification in Senhaja Berber (Amazigh): A Verb-Noun Continuum and Adjectives as a Contact-Induced Innovation <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Matt Malone, Spencer Caplan &amp; Jordan Kodner</strong>
+                <span class="talk-title">Effects and Causes: On the Semantic Coherence of Swahili Noun Classes</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Abdulkadir Adamu</strong>
+                <span class="talk-title">Exploring African personal naming practices: A poly-dynamic framework</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>1:45–2:15 PM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">John David Storment</strong>
+                <span class="talk-title">A unified account of agreement variation in Bantu inversion constructions <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Lateef Adeleke</strong>
+                <span class="talk-title">Polarity-Conditioned TAM and Negative Allomorphs in Uneme</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Dorothy Pokua Agyepong</strong>
+                <span class="talk-title">&#x27;CRUSHING&#x27; Events in Asante Twi: Verb Meaning, Object Types, and Constructional Patterns</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Troy E. Spier</strong>
+                <span class="talk-title">Low-Resourced African Languages in NLP: Syllabification, Part-of-Speech Tagging, and Readability in CiBemba</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Laura McPherson &amp; Mahuton Djessou</strong>
+                <span class="talk-title">Language as the backbone of music: A case study in Maxígbe</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>2:15–2:45 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Larry M. Hyman &amp; Daniel Ibrahim Kamara</strong>
+                <span class="talk-title">Noun Class and Number Marking in Limba (Thɔnkɔ Dialect)</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Mattie Wechsler</strong>
+                <span class="talk-title">Unraveling the phonology and syntax of the final vowel in Swahili</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Eunice Opoku</strong>
+                <span class="talk-title">Syntactic analysis of agentives in Akan motion predicate</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Oluwasegun Amoniyan</strong>
+                <span class="talk-title">Choice of acoustic model in large-scale socio-phonetic studies of Nigerian English: Moving beyond one-size-fits-all <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Nthateng Mokhochane</strong>
+                <span class="talk-title">Teaching Sesotho language without diacritics: challenges and implications</span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <div class="event">
+    <time class="slot-time">2:45–4:15 PM</time>
+    <strong class="event-title">Poster session 1 (with coffee/snacks)</strong>
+    <span class="event-subtitle">MSB Atrium</span>
+    <span class="event-location">See Poster Session Assignments Tab for details</span>
+    <label for="tab-poster" class="poster-tab-link">View poster schedule →</label>
+  </div>
+  <details class="time-slot has-parallel">
+    <summary><span class="session-label">Session 5</span> <time class="slot-time">4:15–5:45 PM</time> <span class="session-count">4 parallel sessions</span></summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 5A<br/><span class="session-title">Argument structure</span></th>
+            <th class="col-session">Session 5B<br/><span class="session-title">Semantics: referentiality</span></th>
+            <th class="col-session">Session 5C<br/><span class="session-title">Consonants II</span></th>
+            <th class="col-session">Session 5D<br/><span class="session-title">Sociolinguistics</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">MSB 1220 - Zoom TBD</td>
+            <td class="session-room">MSB 2213A - Zoom TBD</td>
+            <td class="session-room">MSB 1110 - Zoom TBD</td>
+            <td class="session-room">MSB 1225A - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: Stéphane Térosier</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>4:15–4:45 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Amos Atuhairwe, Patrick Kinchsular &amp; Juvénal Ndayiragije</strong>
+                <span class="talk-title">Syntax and semantics of valency-neutral applicatives in Ruruuli-Lunyala</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Hafida Iguir &amp; Hamida Demirdache</strong>
+                <span class="talk-title">Evidence for indexical shift in Moroccan Arabic</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jeremy Coburn</strong>
+                <span class="talk-title">Acoustic phonetics of Grassmann&#x27;s law in Hadza</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Rebecca Jarvis &amp; Katherine Russell</strong>
+                <span class="talk-title">Assessing language shift in an urban West African context: Two investigations of Atchan language use</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>4:45–5:15 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Thuy-Thuong (Beryl) Bui &amp; Ariela Ye</strong>
+                <span class="talk-title">When causatives really iterate: The case of Baatonum</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Anthony Struthers-Young</strong>
+                <span class="talk-title">Logophoricity in Northern Toussian</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Aaron Braver &amp; Wm. G.  Bennett</strong>
+                <span class="talk-title">Click perception by native and non-native click users: A large-scale web-based perception study</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Richard Ayertey Lawer</strong>
+                <span class="talk-title">Speaking Gender, Performing Power: Linguistic Constructions of Masculinity and Femininity in Akan and Dangme</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>5:15–5:45 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Maria Kouneli &amp; Ryan Walter Smith</strong>
+                <span class="talk-title">(In)direct causation in Kipsigis</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-empty"></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Mudzingwa Calisto</strong>
+                <span class="talk-title">Grammar Outlaws: Phonology of Shona Ideophones</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Nyabuto Choti</strong>
+                <span class="talk-title">Structural and Semantic Dimensions of Linguistic Sexism in Ekegusii <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <div class="event">
+    <time class="slot-time">5:45–6:00 PM</time>
+    <strong class="event-title">Break</strong>
+  </div>
+  <div class="event">
+    <time class="slot-time">6:00-???</time>
+    <strong class="event-title">Banquet</strong>
+    <span class="event-location">CTRC Atrium</span>
+  </div>
+  <h2 class="day-header">Saturday, May 23</h2>
+  <div class="event">
+    <time class="slot-time">8:00–8:30 AM</time>
+    <strong class="event-title">Breakfast &amp; Registration</strong>
+    <span class="event-location">Location</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">8:30–9:30 AM</time>
+    <strong class="event-title">Plenary 3: Nicholas Rolle</strong>
+    <span class="event-subtitle">Tone diachrony beyond tonogenesis: Reconstructing the tone melodies of Proto-Edoid (Niger-Congo)</span>
+    <span class="event-location">MSB 1220 - Zoom TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">9:30–9:45 AM</time>
+    <strong class="event-title">Coffee Break (15 min)</strong>
+    <span class="event-location">Location</span>
+  </div>
+  <details class="time-slot has-parallel">
+    <summary><span class="session-label">Session 6</span> <time class="slot-time">9:45–11:45 AM</time> <span class="session-count">4 parallel sessions</span></summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 6A<br/><span class="session-title">Morphophonology I</span></th>
+            <th class="col-session">Session 6B<br/><span class="session-title">Nominal morphology</span></th>
+            <th class="col-session">Session 6C<br/><span class="session-title">VP syntax &amp; fronting</span></th>
+            <th class="col-session">Session 6D<br/><span class="session-title">LaTeX &amp; publishing workshops</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">MSB 1220 - Zoom TBD</td>
+            <td class="session-room">MSB 2213A - Zoom TBD</td>
+            <td class="session-room">MSB 1110 - Zoom TBD</td>
+            <td class="session-room">MSB 1225A - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair"></td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech"></td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>9:45–10:15 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ferdinand Duru</strong>
+                <span class="talk-title">Partial Haplology and Morphological Repetition Avoidance in Igbo Verbal Morphology</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ruth Kramer</strong>
+                <span class="talk-title">A Morphological Approach to Gender Assignment in Oromo</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jason Overfelt</strong>
+                <span class="talk-title">A Predicate-Fronting Analysis of Tigrinya Clefts</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Michael Diercks</strong>
+                <span class="talk-title">Introduction to LaTeX</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>10:15–10:45 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Adam An &amp; Dieudonné Ndayiragije</strong>
+                <span class="talk-title">Homophony avoidance in Kinyarwanda verbal morphophonology</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Nairan Wu</strong>
+                <span class="talk-title">Case morphology in Khoekhoe</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Uduma Uduma Umeh</strong>
+                <span class="talk-title">Asymmetric repair in Igbo VP and V fronting: An argument for Generalized Head Movement</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">TBD</strong>
+                <span class="talk-title">LaTeX for phonetics/phonology</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>10:45–11:15 AM</time></td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Helen Atipoka Adongo &amp; Hamza Alphonse Ayimbisa</strong>
+                <span class="talk-title">A morphophonological analysis of nominalization in Gurenɛ <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Naama Tiroshi</strong>
+                <span class="talk-title">The augment in Kîîtharaka - Referentiality or syntax?</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Brakson Ping</strong>
+                <span class="talk-title">Obligatory Verbal Complements in West African Languages</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Michael Diercks &amp; Jason Overfelt</strong>
+                <span class="talk-title">LaTeX for syntax/semantics</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>11:15–11:45 AM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Mirella L. Blum</strong>
+                <span class="talk-title">The construct state as indicative of underlying form in Dinka</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Matthew Harley &amp; Richard Chiabuotu</strong>
+                <span class="talk-title">Koro Waci noun classes, agreement and gender in comparative perspective. <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Abena Agyeiwaa Amoh-Yankyera</strong>
+                <span class="talk-title">Exceed Comparative Constructions in Efutu</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Nadine Grimm, Brent Henderson &amp; Michael Marlo</strong>
+                <span class="talk-title">Guidance on publishing</span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <div class="event">
+    <time class="slot-time">11:45 AM–12:00 PM</time>
+    <strong class="event-title">Coffee Break (15 min):</strong>
+    <span class="event-location">Location TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">12:00–1:00 PM</time>
+    <strong class="event-title">Plenary 4: Augustina Owusu</strong>
+    <span class="event-location">MSB 1220 - Zoom TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">1:00–2:30 PM</time>
+    <strong class="event-title">Business meeting and Lunch</strong>
+    <span class="event-location">MSB 1220</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">2:30–4:00 PM</time>
+    <strong class="event-title">Poster session 2 (with coffee/snacks)</strong>
+    <span class="event-subtitle">MSB Atrium</span>
+    <span class="event-location">See Poster Session Assignments Tab for details</span>
+    <label for="tab-poster" class="poster-tab-link">View poster schedule →</label>
+  </div>
+  <details class="time-slot has-parallel">
+    <summary><span class="session-label">Session 7</span> <time class="slot-time">4:00–6:00 PM</time> <span class="session-count">5 parallel sessions</span></summary>
+    <div class="sessions-wrap">
+      <table class="sessions-table">
+        <thead>
+          <tr class="session-headers-row">
+            <th class="col-time"></th>
+            <th class="col-session">Session 7A<br/><span class="session-title">Syntax: extraction</span></th>
+            <th class="col-session">Session 7B<br/><span class="session-title">Phonology III</span></th>
+            <th class="col-session">Session 7C<br/><span class="session-title">Morphophonology II</span></th>
+            <th class="col-session">Session 7D<br/><span class="session-title">Focus, questions &amp; complementizers</span></th>
+            <th class="col-session">Session 7E<br/><span class="session-title">Semantics: general</span></th>
+          </tr>
+          <tr class="session-rooms-row">
+            <td></td>
+            <td class="session-room">MSB 1220 - Zoom TBD</td>
+            <td class="session-room">MSB 2213A - Zoom TBD</td>
+            <td class="session-room">MSB 1110 - Zoom TBD</td>
+            <td class="session-room">MSB 1225A - Zoom TBD</td>
+            <td class="session-room">MSB 1225B - Zoom TBD</td>
+          </tr>
+          <tr class="session-chairs-row">
+            <td></td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+            <td class="session-chair">Chair: TBD</td>
+          </tr>
+          <tr class="session-techs-row">
+            <td></td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+            <td class="session-tech">Tech coordinator: TBD</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="talk-row">
+            <td class="col-time"><time>4:00–4:30 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Peace Benson &amp; John Gluckman</strong>
+                <span class="talk-title">Tough-constructions in Dzə</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Kit Grigoleit</strong>
+                <span class="talk-title">Downstep and phonological structure in Bàsàá</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Danil Alekseev</strong>
+                <span class="talk-title">Phonology of the Nobiin pluractional <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Donna Park &amp; Lariba Pakmoni</strong>
+                <span class="talk-title">Additive/Focus Particles in Bimoba</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ronald Schaefer &amp; Francis Egbokhare</strong>
+                <span class="talk-title">Right Dislocation: Structure and Meaning in Edoid</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>4:30–5:00 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Samba Amadou Kane</strong>
+                <span class="talk-title">Subject Extraction Asymmetry in Pulaar Relative Clauses</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Blake Lehman</strong>
+                <span class="talk-title">Tonal properties of Avatime polar interrogatives</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jeffrey Heath</strong>
+                <span class="talk-title">Bozo tonal ablaut: Neither syntax nor (kinetic) phonology</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Daniel Aremu</strong>
+                <span class="talk-title">Revisiting exclusive association with focus in Yorùbá: Towards an Operator-Particle Approach</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Deborah Morton &amp; Carrie Jackson</strong>
+                <span class="talk-title">The semantics of animacy and plurality in noun class agreement: A psycholinguistic study</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>5:00–5:30 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Katrina Smith</strong>
+                <span class="talk-title">Anti-agreement effects in Kenyan Maay Maay</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Zihan Gao</strong>
+                <span class="talk-title">Tonal patterns in Malawian CiTonga noun phrases: A comparison of rule-based and Optimality-Theoretic analyses</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Florian Lionnet</strong>
+                <span class="talk-title">Subtractive Morphology in Fanya (Bua, Chad)</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ka-Fai Yip &amp; Olabode Adedeji</strong>
+                <span class="talk-title">Defending a quantifier-particle approach to Yorùbá exclusives</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Cor Zanda</strong>
+                <span class="talk-title">Event Structure in Avatime and the Factative Effect</span>
+              </article>
+            </td>
+          </tr>
+          <tr class="talk-row">
+            <td class="col-time"><time>5:30–6:00 PM</time></td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Esther Acheampomaa Acheampong &amp; John Gluckman</strong>
+                <span class="talk-title">Focus construction in Tem</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Ash Lienemann &amp; Christopher R. Green</strong>
+                <span class="talk-title">Stem- vs. clitic-driven harmonic alternation in Jhar: verbs and nouns conflict on the details</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Sharon Rose &amp; Mark Simmons</strong>
+                <span class="talk-title">Vowel harmony and the development of inflection classes in Moro and Tira</span>
+              </article>
+            </td>
+            <td class="col-talk">
+              <article class="talk">
+                <strong class="talk-author">Jackson Confer</strong>
+                <span class="talk-title">Exclusive constructions in Amharic</span>
+              </article>
+            </td>
+            <td class="col-talk col-talk-remote">
+              <article class="talk">
+                <strong class="talk-author">Jiayuan Chen &amp; Ariela Ye</strong>
+                <span class="talk-title">Demonstratives and anti-uniqueness in Baatonum <span class="remote-tag">Remote</span></span>
+              </article>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <div class="event">
+    <time class="slot-time">6:00–6:15 PM</time>
+    <strong class="event-title">Coffee Break (15 min):</strong>
+    <span class="event-location">Location TBD</span>
+  </div>
+  <div class="event">
+    <time class="slot-time">6:15–6:30 PM</time>
+    <strong class="event-title">Closing remarks</strong>
+    <span class="event-location">MSB 1220</span>
+  </div>
+</div>
+<div id="pane-poster" class="tab-pane">
+  <p class="tab-note">Remote posters will be hosted on gather.town (link TBA). You can see remote posters at the link any time during the conference.</p>
+  <section class="poster-session">
+    <h2 class="poster-session-header">Bantoid poster session: Wednesday, 3:00-4:00 PM</h2>
+    <table class="poster-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Authors</th>
+          <th>Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="poster-row remote">
+          <td class="poster-num">Remote</td>
+          <td class="poster-authors">Jean Paul Gaindjoung</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1VanPuoedTA3Wk-rGld1XhVxtCj2m3Hw7/view" target="_blank" rel="noopener">Conceptual metaphor theory of anger in Ghomala&#x27; and English</a></td>
+        </tr>
+        <tr class="poster-row remote">
+          <td class="poster-num">Remote</td>
+          <td class="poster-authors">Constantine Kouankem</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1Y5-5CgAzLDdKSWVEhhUl-UWXwUu3Dwt-/view" target="_blank" rel="noopener">Formal properties and semantic profiles of deverbatives in Medumba</a></td>
+        </tr>
+        <tr class="poster-row remote">
+          <td class="poster-num">Remote</td>
+          <td class="poster-authors">Florence Tabe Oben</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1fc17AVXi7gb6-W9JURhy8cCmwg_1uFXP/view" target="_blank" rel="noopener">Gender assignment in noun-noun compounds in Shupamem and Kenyang</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">1</td>
+          <td class="poster-authors">Martha Njui Mbu</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1ZZOlBHKk42vounuS24cFcSnx_4DVgDDf/view" target="_blank" rel="noopener">The Grammar of Interrogatives in Menka</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">2</td>
+          <td class="poster-authors">Esther Phubon Chie</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1RxOk4Z2h7rYu4smSxTLcOdxXBXv5_IuY/view" target="_blank" rel="noopener">Indigenous and local knowledge in climate change adaptation in the Babanki community: A documentary linguistics perspective</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">3</td>
+          <td class="poster-authors">Emmanuel Tabah</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1ci4xR7wu1ShEUvm8ZoHT96ubFjDD60bu/view" target="_blank" rel="noopener">The Structure and sense of Limbum ideophones</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">4</td>
+          <td class="poster-authors">Nancy Nyindem Sirih-Nagang</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1o5G-ezSFleth9jTXmzKsU0C86vsWYJQ-/view" target="_blank" rel="noopener">Multilingual practices and endogenous language endangerment among the Isubu</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">5</td>
+          <td class="poster-authors">Nancy Nyindem Sirih-Nagang</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1n1B2c6NpNAyOe2jfvOBMl4SJegWIZiRC/view" target="_blank" rel="noopener">Ecolinguistics and Fishing in Wovea: A documentary linguistic perspective on adapting local knowledge to climate change to ensure sustainability</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">6</td>
+          <td class="poster-authors">Cameron Hamm</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1Zhes1cII-i_y2v27he44WWI1QYZ4zm4b/view" target="_blank" rel="noopener">Copy pronouns in Chufie&#x27; (Grassfields) and beyond</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">7</td>
+          <td class="poster-authors">Emmanuel Bawa</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1WcCIVm6MpY-LmiJ4D9aGBVVMR36RPGRG/view" target="_blank" rel="noopener">A descriptive analysis of the negation system of Ekhwa Adara</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="poster-session">
+    <h2 class="poster-session-header">ACAL poster session 1: Friday, 2:45-4:15 PM</h2>
+    <p class="poster-timing">Odd-numbered posters present from 2:45-3:30.<br/>Even-numbered posters present from 3:30-4:15.<br/>Remote posters may present when they wish.<br/><em class="poster-timing-note">Please adhere to your times: it will create space for everyone and your audience will be larger!</em></p>
+    <table class="poster-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Authors</th>
+          <th>Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="poster-row remote">
+          <td class="poster-num">Remote</td>
+          <td class="poster-authors">Rachel Ayuk Ojong Diba</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1wl3UtMYG3UPW7Gb6_6z19I7EB3pRU_92/view" target="_blank" rel="noopener">The role of Njangi meetings in shaping language maintenance and identity in Cameroon’s internal diaspora</a></td>
+        </tr>
+        <tr class="poster-row remote">
+          <td class="poster-num">Remote</td>
+          <td class="poster-authors">Asmae El Hassani</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1jSeUayECnFDW5nw9poKFv4IfDHSPHrvY/view" target="_blank" rel="noopener">Head-Licensed Definiteness and Annexed State in Tarifit DPs</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F1</td>
+          <td class="poster-authors">Charles Prempeh, Stella Afi Makafui Yegblemenawo</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1TZeGK6OaI8OODg3Z-zqFh6gI8xGULJ23/view" target="_blank" rel="noopener">Multilingualism and Political Activism in Accra, Ghana</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F2</td>
+          <td class="poster-authors">Yanfei Lu, Alyssa Vorobey, Max Zuercher, Natalia Liu, Xinyan Qian, Fiona John, Sandra Glozshtein, Elvis Batung, Alex Angsongna, Samuel Akinbo, Douglas Pulleyblank</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1a9jjfw7U1ksGgbPoHppaG8bgdFN6VE7L/view" target="_blank" rel="noopener">Language Reclamation through Stories: A Collaborative Project with Dagaaba Community Members</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F3</td>
+          <td class="poster-authors">Barqach El Mustapha</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1GQWo1d1a7cXoEnH4hBGaZS1ManZuyNx6/view" target="_blank" rel="noopener">Moroccan Standard Amazigh on Social Media: Digital Practices, Variation, and Normative Recomposition</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F4</td>
+          <td class="poster-authors">Ettien Koffi, Naomie Bambara</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1DqxeENgzTsWOPKEWDQg0XpbOmCmIPEVJ/view" target="_blank" rel="noopener">Text-to-Speech Synthesis by Syllable Concatenation Demonstrated on Moore</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F5</td>
+          <td class="poster-authors">Kpoglu Promise Dodzi</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1gI877tZFBHX0eGUw3fN7B3VOznQc9Bix/view" target="_blank" rel="noopener">How Dogon Languages Evolve: Insights from Computational Simulation</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F6</td>
+          <td class="poster-authors">Ahmed Alzahrani, Malleeswari Jagabattuni, Jordan White, Matthew Faytak</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1nuHOoSTTJjK6HBcOWS8Hpz-8kmBQXf4C/view" target="_blank" rel="noopener">Vowel nasality and nasal coarticulation in Yoro Mumuye</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F7</td>
+          <td class="poster-authors">Danielle Quaye</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1Z4pyhBJM7tCkWxtwBtx-Y8cC6DoGu_ck/view" target="_blank" rel="noopener">How Do Listeners Perceive a Negative VOT Contrast? Gradient Perception of Gã /gb–kp/</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F8</td>
+          <td class="poster-authors">Chloe Guttmann</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/11n7y9-B8lkxRVOca0y0lL9JlmtQKc81R/view" target="_blank" rel="noopener">Voice quality differences in [+ATR] and [−ATR] vowels in Asante Twi</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F9</td>
+          <td class="poster-authors">Oluwasegun Amoniyan, Rotimi Olanrele Oladipupo</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1yFEjx0t3rVJoSMdudEYp6-837f89Qxm4/view" target="_blank" rel="noopener">Vowel dynamics in Nigerian English: The intersection between speaker&#x27;s ethnicity, variability, and speech rate</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F10</td>
+          <td class="poster-authors">Chrisnah R. Mfouhou, Sara Pacchiarotti</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1Z3J8UMAxLv1ZIxIKbW5ssm6RPcCV3dlw/view" target="_blank" rel="noopener">Grammatical tone in the Ndungalɛ (Ubangi, Mbaic) verb stem</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F11</td>
+          <td class="poster-authors">Mirella L. Blum, Nico Bezzerides</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1dpU-0jZlE0iEjPhQshmIyNUjlvdH52-A/view" target="_blank" rel="noopener">The tone system of Gulu Acholi and the role of tone in Acholi morphophonology</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F12</td>
+          <td class="poster-authors">Peace Benson</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/11z7R1luXJwnseFmukj1UCs0IL-4Bigcl/view" target="_blank" rel="noopener">An OT analysis of verbal reduplication in Dzə</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F13</td>
+          <td class="poster-authors">Isaac N. Mwinlaaru</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/17FKn4F3BJnbhqTCVAH3rknb8BnB6zx02/view" target="_blank" rel="noopener">More Than Word Formation: Grammatical and Lexical Compounding in Dagaare</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F14</td>
+          <td class="poster-authors">Brent Henderson, Raul Camargo Blanco</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/14EYjUTJxn9Xtr3Nj4aiQNazhrT2ikpZV/view" target="_blank" rel="noopener">Polysemy or Compositionality? Reciprocal, pluractional and causative uses of the suffix -anyiny in Tiriki</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F15</td>
+          <td class="poster-authors">Mofart Onyoni Ayiega, Deogratias Ngonyani</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/189LEQF-P-ez5h4GWv5Ax6G4rIoPqPHQZ/view" target="_blank" rel="noopener">Suffix Ordering in Ekegusii Verbs</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F16</td>
+          <td class="poster-authors">Ellie Xia, Deogratias Ngonyani</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/11qn8INOMFVGzyvC3N_dpTdCy-5v9BjCq/view" target="_blank" rel="noopener">A Quantitative and Qualitative Analysis of Syntactic Variation in Negation in 76 Bantu Languages</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F17</td>
+          <td class="poster-authors">Richard Gagnon</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1PIqy_nABevgOTkWuUNdrbAo1y51KBh55/view" target="_blank" rel="noopener">Hit iT and Clitic: STAMP Morphs in Jããne as Clitic-Copying</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F18</td>
+          <td class="poster-authors">JK Subramony</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1VTXy-e_M9rP4vPz9sREin-Pcb22Py5CE/view" target="_blank" rel="noopener">Verb Complements in Avatime</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F19</td>
+          <td class="poster-authors">Darius Adjong</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1jYt325TYCrPGfy087V6suacb8tEtGxBK/view" target="_blank" rel="noopener">Epistemic modality, evidentiality, and the structure of Buli discourse</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">F20</td>
+          <td class="poster-authors">Colin Keith-Hill, Patrick Kinchsular, Mikayla Oliver, Siena Weingartz, Vera Hohaus, Suzi Lima</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1tzGo1f8zE4z1m3g9k2FPRJJs4erYBG7Q/view" target="_blank" rel="noopener">On the Absence of Superlative Morphology in EXCEED-Type Languages</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="poster-session">
+    <h2 class="poster-session-header">ACAL poster session 2: Saturday, 2:30-4:00 PM</h2>
+    <p class="poster-timing">Odd-numbered posters present from 2:30-3:15<br/>Even-numbered posters present from 3:15-4:00<br/>Remote posters may present when they wish.<br/><em class="poster-timing-note">Please adhere to your times: it will create space for everyone and your audience will be larger!</em></p>
+    <table class="poster-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Authors</th>
+          <th>Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="poster-row remote">
+          <td class="poster-num">Remote</td>
+          <td class="poster-authors">Kaosarat Aina</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1VkI76DPD_jk4TGCOFCSXV7FGHgYutPe0/view" target="_blank" rel="noopener">Interprosody in Contact: The Emergence of a Pitch-Accent System in English Loanwords in Yoruba</a></td>
+        </tr>
+        <tr class="poster-row remote">
+          <td class="poster-num">Remote</td>
+          <td class="poster-authors">Jarry Chuang</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1WKsKG5g_QrH0cCGzUT8qDrQT3gPBxFud/view" target="_blank" rel="noopener">Existential constructions in Igbo</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S2</td>
+          <td class="poster-authors">Mikayla Oliver</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1mU24fFimS3CjOuqnqaPAYO4cyE65BqZR/view" target="_blank" rel="noopener">The semantics of &#x27;small&#x27; and &#x27;little&#x27; in Swahili</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S3</td>
+          <td class="poster-authors">Boubacar Bocoum</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1pEFm06LhE68GAZ_A6NH6zrg-ppS9WQz2/view" target="_blank" rel="noopener">Semantic Extension in Naming the New in Bamanankan: Between Morphological Constraints and Cultural Promotion</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S4</td>
+          <td class="poster-authors">Olga Lerato Legodi, Thabo Ditsele, Nontobeko Thobile Mbatha</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1ldny5LTxcV3AWqaZc3VHrC-kYHgze8d1/view" target="_blank" rel="noopener">Possible influences of mixed languages on linguistic and cultural identities: A case study of a Southern Bantu people in Pretoria, South Africa</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S5</td>
+          <td class="poster-authors">Klinogo Gameli Ransford, Stella Afi Makafui Yegblemenawo</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/18ezui6CowNAgOhcFsMiGJCzX7PblNXDK/view" target="_blank" rel="noopener">Pragmatic strategies in surname appellations in the Southern Volta in Ghana</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S6</td>
+          <td class="poster-authors">Olanrewaju Samuel</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/11boZqQkSGNBzQLOYoENZybp-MBjbhjGA/view" target="_blank" rel="noopener">Modeling Reduplication Patterns in Yàgbà Computationally</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S7</td>
+          <td class="poster-authors">Ellie Xia, Deogratias Ngonyani</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1Z4AzPLvnNJZYZkdNOPv3GdLWj1ZK-zq5/view" target="_blank" rel="noopener">Prosodic and Segmental Determinants of Vowel Duration: Evidence from Ndendeule</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S8</td>
+          <td class="poster-authors">André Batchelder-Schwab</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1BdUkKs_PWrdS6ju3QV2JhKDhvjilioBp/view" target="_blank" rel="noopener">Tshila phoneme gaps and the case against clicks as clusters</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S9</td>
+          <td class="poster-authors">Ferdinand Duru, Jack Pruett</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1sLR2T2aleVbcuG6PDPy5lEVOuWCwE_ux/view" target="_blank" rel="noopener">Grammatical Tone in Igbo Multisyllabic Verbs</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S10</td>
+          <td class="poster-authors">Yvonne Akwele Ollennu, Francis Tsatsu Owulah</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1hYUgomXd81XvT6Kx_Ip2h8xxafwv97C4/view" target="_blank" rel="noopener">Aspects of tone in Dangme</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S11</td>
+          <td class="poster-authors">Cassandra Caragine</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1eAFppolhK3o-KaBcHpMD8iLvIkrE1DTT/view" target="_blank" rel="noopener">Mutation and Reduplication in Seereer-Siin</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S12</td>
+          <td class="poster-authors">Akano Johnson</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1ewQdJrh646sXmEWtT28dWAnh_t7dnzRi/view" target="_blank" rel="noopener">Verbal Pluractionality In Tunzu</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S13</td>
+          <td class="poster-authors">Chenyu Feng, Manish Kandepalli Cherukuru, Maria Kouneli</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1xq9FtsklH9GLzOdpp6FXOR7YzeHdv7kO/view" target="_blank" rel="noopener">Pokot subject markers are clitics</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S14</td>
+          <td class="poster-authors">Godfred Agyapong</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1dUBtSbYGkR3to40V09eVqERIxB2MINSL/view" target="_blank" rel="noopener">Exploring Negation in Edo: Time References, Verb Dynamics and Adverbial Interactions</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S15</td>
+          <td class="poster-authors">Josiah Nii Ashie Neequaye, Vanessa Wing Yan Tsang</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1QPnyS5S_dIzq-mfwmR5C9aiurrmT8Ry9/view" target="_blank" rel="noopener">A cross-modal comparison of event narratives: Evidence from co-speech gesture in Gã and classifiers constructions in HKSL.</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S16</td>
+          <td class="poster-authors">Catherine Ekua Mensah, Emmanuel Amo Ofori, Andrews Pewodee Obeng</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1kbjziFMZKS9UzzPiPndOj0h_8l5-fM3c/view" target="_blank" rel="noopener">A FRAME SEMANTIC ANALYSIS OF DISEASE NAMES IN AKAN</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S17</td>
+          <td class="poster-authors">Ahenkorah Comfort</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1cjGTgixfKlxmoK8pJ0pq6xqtTePnaOsz/view" target="_blank" rel="noopener">External and Internal event plurality: The case of reduplication in Akan</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S1</td>
+          <td class="poster-authors">Théodore Bebey</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1jEIbA8gaJhyWSTb6PLlr76HfenHUuvcQ/view" target="_blank" rel="noopener">Syntactic Structure and Pragmatic Interpretations of Embedded Questions in Muyang</a></td>
+        </tr>
+        <tr class="poster-row">
+          <td class="poster-num">S18</td>
+          <td class="poster-authors">Rachel Thompson, Jemima Anderson</td>
+          <td class="poster-title"><a href="https://drive.google.com/file/d/1x6CxaC5FTjAXn63MmIUbt5PC24KsPtPn/view" target="_blank" rel="noopener">Pragmatic Acts in Ghanaian Midwives’ Facebook Posts on Maternal Healthcare</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+  </div>
+</body>
+</html>
