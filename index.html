@@ -368,6 +368,13 @@ details.time-slot > summary a.session-link { color: #111; }
 .talk-cancelled .talk-title { color: #444; }
 .poster-cancelled td { opacity: 0.5; color: #444; }
 
+.page-footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #888;
+  padding: 1.5rem 1rem 1rem;
+}
+
 @media (max-width: 600px) {
   .poster-table thead { display: none; }
   .poster-table tr {
@@ -417,8 +424,8 @@ details.time-slot > summary a.session-link { color: #111; }
     <strong class="event-title">Coffee break</strong>
     <span class="event-location">CTRC Atrium</span>
   </div>
-  <details class="time-slot" open data-date="2026-05-20">
-    <summary><a href="https://drive.google.com/drive/folders/1jMRutMH1LRZ0xx1R5jzmNaXe1G1_C1cR" target="_blank" rel="noopener" class="session-link">Session 1</a></summary>
+  <details class="time-slot" open data-date="2026-05-20" data-end="12:30">
+    <summary><time class="slot-time">10:30 AM–12:30 PM</time> <a href="https://drive.google.com/drive/folders/1jMRutMH1LRZ0xx1R5jzmNaXe1G1_C1cR" target="_blank" rel="noopener" class="session-link">Session 1</a></summary>
     <div class="sessions-wrap">
       <table class="sessions-table">
         <thead>
@@ -497,8 +504,8 @@ details.time-slot > summary a.session-link { color: #111; }
     <span class="event-location">See Poster Session Assignments Tab for details</span>
     <a href="#bantoid-poster" onclick="goToPoster('bantoid-poster');return false;" class="poster-tab-link">View poster schedule →</a>
   </div>
-  <details class="time-slot" open data-date="2026-05-20">
-    <summary><a href="https://drive.google.com/drive/folders/1wUNRpUBDOCTGAYmtCG8_hwI8OAvXBcpB" target="_blank" rel="noopener" class="session-link">Session 2</a></summary>
+  <details class="time-slot" open data-date="2026-05-20" data-end="17:30">
+    <summary><time class="slot-time">4:00 PM–5:30 PM</time> <a href="https://drive.google.com/drive/folders/1wUNRpUBDOCTGAYmtCG8_hwI8OAvXBcpB" target="_blank" rel="noopener" class="session-link">Session 2</a></summary>
     <div class="sessions-wrap">
       <table class="sessions-table">
         <thead>
@@ -557,8 +564,8 @@ details.time-slot > summary a.session-link { color: #111; }
     <strong class="event-title">Registration:</strong>
     <span class="event-location">Location TBD</span>
   </div>
-  <details class="time-slot" open data-date="2026-05-21">
-    <summary><a href="https://drive.google.com/drive/folders/1e08ZKEMGl5jFVTzyF12D95ThxNJbyXah" target="_blank" rel="noopener" class="session-link">Session 3</a></summary>
+  <details class="time-slot" open data-date="2026-05-21" data-end="10:30">
+    <summary><time class="slot-time">9:00 AM–10:30 AM</time> <a href="https://drive.google.com/drive/folders/1e08ZKEMGl5jFVTzyF12D95ThxNJbyXah" target="_blank" rel="noopener" class="session-link">Session 3</a></summary>
     <div class="sessions-wrap">
       <table class="sessions-table">
         <thead>
@@ -612,7 +619,7 @@ details.time-slot > summary a.session-link { color: #111; }
     </div>
   </details>
   <details class="time-slot" open data-date="2026-05-21">
-    <summary><a href="https://drive.google.com/drive/folders/13_1yZmKASPlR-ol2UE-2EdDhseWUn55T" target="_blank" rel="noopener" class="session-link">Session 4</a></summary>
+    <summary><time class="slot-time">11:00 AM–12:00 NOON</time> <a href="https://drive.google.com/drive/folders/13_1yZmKASPlR-ol2UE-2EdDhseWUn55T" target="_blank" rel="noopener" class="session-link">Session 4</a></summary>
     <div class="sessions-wrap">
       <table class="sessions-table">
         <thead>
@@ -2208,6 +2215,7 @@ details.time-slot > summary a.session-link { color: #111; }
   </section>
 </div>
   </div>
+  <footer class="page-footer">Last updated: May 11, 2026 at 6:49 PM ET</footer>
 <script>
 function goToPoster(anchor) {
   document.getElementById('tab-poster').checked = true;
