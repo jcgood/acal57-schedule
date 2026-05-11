@@ -493,7 +493,7 @@ details.time-slot > summary a.session-link { color: #111; }
     <strong class="event-title">Poster session (with coffee/snacks)</strong>
     <span class="event-subtitle">CTRC Atrium</span>
     <span class="event-location">See Poster Session Assignments Tab for details</span>
-    <label for="tab-poster" class="poster-tab-link">View poster schedule →</label>
+    <a href="#" onclick="document.getElementById('tab-poster').checked=true;" class="poster-tab-link">View poster schedule →</a>
   </div>
   <details class="time-slot">
     <summary>Session 2</summary>
@@ -1391,7 +1391,7 @@ details.time-slot > summary a.session-link { color: #111; }
     <strong class="event-title">Poster session 1 (with coffee/snacks)</strong>
     <span class="event-subtitle">MSB Atrium</span>
     <span class="event-location">See Poster Session Assignments Tab for details</span>
-    <label for="tab-poster" class="poster-tab-link">View poster schedule →</label>
+    <a href="#" onclick="document.getElementById('tab-poster').checked=true;" class="poster-tab-link">View poster schedule →</a>
   </div>
   <details class="time-slot has-parallel">
     <summary><span class="session-label">Session 5</span> <time class="slot-time">4:15–5:45 PM</time> <span class="session-count">4 parallel sessions</span></summary>
@@ -1701,7 +1701,7 @@ details.time-slot > summary a.session-link { color: #111; }
     <strong class="event-title">Poster session 2 (with coffee/snacks)</strong>
     <span class="event-subtitle">MSB Atrium</span>
     <span class="event-location">See Poster Session Assignments Tab for details</span>
-    <label for="tab-poster" class="poster-tab-link">View poster schedule →</label>
+    <a href="#" onclick="document.getElementById('tab-poster').checked=true;" class="poster-tab-link">View poster schedule →</a>
   </div>
   <details class="time-slot has-parallel">
     <summary><span class="session-label">Session 7</span> <time class="slot-time">4:00–6:00 PM</time> <span class="session-count">5 parallel sessions</span></summary>
@@ -1892,7 +1892,7 @@ details.time-slot > summary a.session-link { color: #111; }
 <div id="pane-poster" class="tab-pane">
   <p class="tab-note">Remote posters will be hosted on gather.town (link TBA). You can see remote posters at the link any time during the conference.</p>
   <section class="poster-session">
-    <h2 class="poster-session-header">Bantoid poster session: Wednesday, 3:00-4:00 PM</h2>
+    <h2 class="poster-session-header" id="bantoid-poster">Bantoid poster session: Wednesday, 3:00-4:00 PM</h2>
     <table class="poster-table">
       <thead>
         <tr>
@@ -1956,7 +1956,7 @@ details.time-slot > summary a.session-link { color: #111; }
     </table>
   </section>
   <section class="poster-session">
-    <h2 class="poster-session-header">ACAL poster session 1: Friday, 2:45-4:15 PM</h2>
+    <h2 class="poster-session-header" id="acal-poster-1">ACAL poster session 1: Friday, 2:45-4:15 PM</h2>
     <p class="poster-timing">Odd-numbered posters present from 2:45-3:30.<br/>Even-numbered posters present from 3:30-4:15.<br/>Remote posters may present when they wish.<br/><em class="poster-timing-note">Please adhere to your times: it will create space for everyone and your audience will be larger!</em></p>
     <table class="poster-table">
       <thead>
@@ -2081,7 +2081,7 @@ details.time-slot > summary a.session-link { color: #111; }
     </table>
   </section>
   <section class="poster-session">
-    <h2 class="poster-session-header">ACAL poster session 2: Saturday, 2:30-4:00 PM</h2>
+    <h2 class="poster-session-header" id="acal-poster-2">ACAL poster session 2: Saturday, 2:30-4:00 PM</h2>
     <p class="poster-timing">Odd-numbered posters present from 2:30-3:15<br/>Even-numbered posters present from 3:15-4:00<br/>Remote posters may present when they wish.<br/><em class="poster-timing-note">Please adhere to your times: it will create space for everyone and your audience will be larger!</em></p>
     <table class="poster-table">
       <thead>
