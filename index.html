@@ -493,7 +493,7 @@ details.time-slot > summary a.session-link { color: #111; }
     <strong class="event-title">Poster session (with coffee/snacks)</strong>
     <span class="event-subtitle">CTRC Atrium</span>
     <span class="event-location">See Poster Session Assignments Tab for details</span>
-    <a href="#" onclick="document.getElementById('tab-poster').checked=true;" class="poster-tab-link">View poster schedule →</a>
+    <a href="#bantoid-poster" onclick="goToPoster('bantoid-poster');return false;" class="poster-tab-link">View poster schedule →</a>
   </div>
   <details class="time-slot">
     <summary>Session 2</summary>
@@ -1391,7 +1391,7 @@ details.time-slot > summary a.session-link { color: #111; }
     <strong class="event-title">Poster session 1 (with coffee/snacks)</strong>
     <span class="event-subtitle">MSB Atrium</span>
     <span class="event-location">See Poster Session Assignments Tab for details</span>
-    <a href="#" onclick="document.getElementById('tab-poster').checked=true;" class="poster-tab-link">View poster schedule →</a>
+    <a href="#acal-poster-1" onclick="goToPoster('acal-poster-1');return false;" class="poster-tab-link">View poster schedule →</a>
   </div>
   <details class="time-slot has-parallel">
     <summary><span class="session-label">Session 5</span> <time class="slot-time">4:15–5:45 PM</time> <span class="session-count">4 parallel sessions</span></summary>
@@ -1701,7 +1701,7 @@ details.time-slot > summary a.session-link { color: #111; }
     <strong class="event-title">Poster session 2 (with coffee/snacks)</strong>
     <span class="event-subtitle">MSB Atrium</span>
     <span class="event-location">See Poster Session Assignments Tab for details</span>
-    <a href="#" onclick="document.getElementById('tab-poster').checked=true;" class="poster-tab-link">View poster schedule →</a>
+    <a href="#acal-poster-1" onclick="goToPoster('acal-poster-1');return false;" class="poster-tab-link">View poster schedule →</a>
   </div>
   <details class="time-slot has-parallel">
     <summary><span class="session-label">Session 7</span> <time class="slot-time">4:00–6:00 PM</time> <span class="session-count">5 parallel sessions</span></summary>
@@ -2197,5 +2197,17 @@ details.time-slot > summary a.session-link { color: #111; }
   </section>
 </div>
   </div>
+<script>
+function goToPoster(anchor) {
+  document.getElementById('tab-poster').checked = true;
+  var targetId = anchor === 'bantoid-poster' ? 'pane-poster' : anchor;
+  var el = document.getElementById(targetId);
+  if (!el) return;
+  var nav = document.querySelector('.tab-nav');
+  el.style.scrollMarginTop = (nav ? nav.offsetHeight : 0) + 'px';
+  void el.getBoundingClientRect();
+  el.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+</script>
 </body>
 </html>
