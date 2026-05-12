@@ -130,7 +130,6 @@ details.time-slot[open] > summary::before { transform: rotate(90deg); }
 details.time-slot > summary .slot-time     { color: #111; }
 details.time-slot > summary .session-label { font-weight: 700; color: #111; }
 details.time-slot > summary .session-count { color: #333; font-weight: 400; font-size: 0.9rem; }
-details.time-slot > summary a.session-link { color: #111; }
 
 /* ---- Sessions table with horizontal scroll ---- */
 .sessions-wrap {
@@ -186,6 +185,23 @@ details.time-slot > summary a.session-link { color: #111; }
   font-weight: 700;
   font-size: 1rem;
   color: #111;
+}
+/* Session folder link inside header cell */
+.sessions-table .folder-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #5a3e00;
+  background: rgba(0,0,0,0.10);
+  border-radius: 4px;
+  padding: 0.1em 0.45em;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+.sessions-table .folder-link:hover {
+  background: rgba(0,0,0,0.20);
+  text-decoration: none;
 }
 
 /* Sub-header rows (room, chair, tech): left+right borders only, no top/bottom */
@@ -425,13 +441,13 @@ details.time-slot > summary a.session-link { color: #111; }
     <span class="event-location">CTRC Atrium</span>
   </div>
   <details class="time-slot" open data-date="2026-05-20" data-end="12:30">
-    <summary><time class="slot-time">10:30 AM–12:30 PM</time> <a href="https://drive.google.com/drive/folders/1jMRutMH1LRZ0xx1R5jzmNaXe1G1_C1cR" target="_blank" rel="noopener" class="session-link">Session 1</a></summary>
+    <summary><time class="slot-time">10:30 AM–12:30 PM</time> Session 1</summary>
     <div class="sessions-wrap">
       <table class="sessions-table">
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1jMRutMH1LRZ0xx1R5jzmNaXe1G1_C1cR" target="_blank" rel="noopener">Session 1<br/><span class="session-title">Noun morphology</span></a></th>
+            <th class="col-session">Session 1<br/><span class="session-title">Noun morphology</span><br/><a href="https://drive.google.com/drive/folders/1jMRutMH1LRZ0xx1R5jzmNaXe1G1_C1cR" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -505,13 +521,13 @@ details.time-slot > summary a.session-link { color: #111; }
     <a href="#bantoid-poster" onclick="goToPoster('bantoid-poster');return false;" class="poster-tab-link">View poster schedule →</a>
   </div>
   <details class="time-slot" open data-date="2026-05-20" data-end="17:30">
-    <summary><time class="slot-time">4:00 PM–5:30 PM</time> <a href="https://drive.google.com/drive/folders/1wUNRpUBDOCTGAYmtCG8_hwI8OAvXBcpB" target="_blank" rel="noopener" class="session-link">Session 2</a></summary>
+    <summary><time class="slot-time">4:00 PM–5:30 PM</time> Session 2</summary>
     <div class="sessions-wrap">
       <table class="sessions-table">
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1wUNRpUBDOCTGAYmtCG8_hwI8OAvXBcpB" target="_blank" rel="noopener">Session 2<br/><span class="session-title">Morphology</span></a></th>
+            <th class="col-session">Session 2<br/><span class="session-title">Morphology</span><br/><a href="https://drive.google.com/drive/folders/1wUNRpUBDOCTGAYmtCG8_hwI8OAvXBcpB" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -565,13 +581,13 @@ details.time-slot > summary a.session-link { color: #111; }
     <span class="event-location">Location TBD</span>
   </div>
   <details class="time-slot" open data-date="2026-05-21" data-end="10:30">
-    <summary><time class="slot-time">9:00 AM–10:30 AM</time> <a href="https://drive.google.com/drive/folders/1e08ZKEMGl5jFVTzyF12D95ThxNJbyXah" target="_blank" rel="noopener" class="session-link">Session 3</a></summary>
+    <summary><time class="slot-time">9:00 AM–10:30 AM</time> Session 3</summary>
     <div class="sessions-wrap">
       <table class="sessions-table">
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1e08ZKEMGl5jFVTzyF12D95ThxNJbyXah" target="_blank" rel="noopener">Session 3<br/><span class="session-title">Historical-comparative linguistics</span></a></th>
+            <th class="col-session">Session 3<br/><span class="session-title">Historical-comparative linguistics</span><br/><a href="https://drive.google.com/drive/folders/1e08ZKEMGl5jFVTzyF12D95ThxNJbyXah" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -619,13 +635,13 @@ details.time-slot > summary a.session-link { color: #111; }
     </div>
   </details>
   <details class="time-slot" open data-date="2026-05-21">
-    <summary><time class="slot-time">11:00 AM–12:00 NOON</time> <a href="https://drive.google.com/drive/folders/13_1yZmKASPlR-ol2UE-2EdDhseWUn55T" target="_blank" rel="noopener" class="session-link">Session 4</a></summary>
+    <summary><time class="slot-time">11:00 AM–12:00 NOON</time> Session 4</summary>
     <div class="sessions-wrap">
       <table class="sessions-table">
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/13_1yZmKASPlR-ol2UE-2EdDhseWUn55T" target="_blank" rel="noopener">Session 4<br/><span class="session-title">Potpourri</span></a></th>
+            <th class="col-session">Session 4<br/><span class="session-title">Potpourri</span><br/><a href="https://drive.google.com/drive/folders/13_1yZmKASPlR-ol2UE-2EdDhseWUn55T" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -695,11 +711,11 @@ details.time-slot > summary a.session-link { color: #111; }
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1GpQ-qtvq4dkUZOfAcP3IjLHdV-EqWlqH" target="_blank" rel="noopener">Session 1A<br/><span class="session-title">Syntax: clitics, resumptives &amp; agreement</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1IZe6wzOiijBjjU-B0GiPOeggGTdrBHek" target="_blank" rel="noopener">Session 1B<br/><span class="session-title">Semantics: (in)definites</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1itNI75kGCIeU3cYBlQXwQjlXUmr2pE8B" target="_blank" rel="noopener">Session 1C<br/><span class="session-title">Consonants I: phonetics</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1yUsV9wfUbfbOTA6l53KLsI6ihF_Zu3-M" target="_blank" rel="noopener">Session 1D<br/><span class="session-title">Banto3d: Sociocultural linguistics</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1ZIC6lMtQGSvO9MtKWijfk6lgNX7Ccozo" target="_blank" rel="noopener">Session 1E<br/><span class="session-title">Phonology I: tone</span></a></th>
+            <th class="col-session">Session 1A<br/><span class="session-title">Syntax: clitics, resumptives &amp; agreement</span><br/><a href="https://drive.google.com/drive/folders/1GpQ-qtvq4dkUZOfAcP3IjLHdV-EqWlqH" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 1B<br/><span class="session-title">Semantics: (in)definites</span><br/><a href="https://drive.google.com/drive/folders/1IZe6wzOiijBjjU-B0GiPOeggGTdrBHek" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 1C<br/><span class="session-title">Consonants I: phonetics</span><br/><a href="https://drive.google.com/drive/folders/1itNI75kGCIeU3cYBlQXwQjlXUmr2pE8B" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 1D<br/><span class="session-title">Banto3d: Sociocultural linguistics</span><br/><a href="https://drive.google.com/drive/folders/1yUsV9wfUbfbOTA6l53KLsI6ihF_Zu3-M" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 1E<br/><span class="session-title">Phonology I: tone</span><br/><a href="https://drive.google.com/drive/folders/1ZIC6lMtQGSvO9MtKWijfk6lgNX7Ccozo" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -875,11 +891,11 @@ details.time-slot > summary a.session-link { color: #111; }
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1s7fP41ptoJWuKgjRjQ5GwAeYcWDxdEaw" target="_blank" rel="noopener">Session 2A<br/><span class="session-title">A-movement</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1lLnCleP511Kfkl39ySXNmtXPNzgMFbQX" target="_blank" rel="noopener">Session 2B<br/><span class="session-title">Suprasegmental phonetics</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1EmK-Na5si5llzNdw8I7BC-RDBExiW2qT" target="_blank" rel="noopener">Session 2C<br/><span class="session-title">Argument structure &amp; nominal morphosyntax</span></a></th>
-            <th class="col-session">Session 2D<br/><span class="session-title">Phonology II</span></th>
-            <th class="col-session">Session 2E<br/><span class="session-title">Variation and change</span></th>
+            <th class="col-session">Session 2A<br/><span class="session-title">A-movement</span><br/><a href="https://drive.google.com/drive/folders/1s7fP41ptoJWuKgjRjQ5GwAeYcWDxdEaw" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 2B<br/><span class="session-title">Suprasegmental phonetics</span><br/><a href="https://drive.google.com/drive/folders/1lLnCleP511Kfkl39ySXNmtXPNzgMFbQX" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 2C<br/><span class="session-title">Argument structure &amp; nominal morphosyntax</span><br/><a href="https://drive.google.com/drive/folders/1EmK-Na5si5llzNdw8I7BC-RDBExiW2qT" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 2D<br/><span class="session-title">Phonology II</span><br/><a href="https://drive.google.com/drive/folders/1OXraYsZjCqLDQ5ThfT3NYRTPotNm3U70" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 2E<br/><span class="session-title">Variation and change</span><br/><a href="https://drive.google.com/drive/folders/1mwXmfWynZz2A3HTwA1f7Zdn1f8lwJqsE" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -1061,11 +1077,11 @@ details.time-slot > summary a.session-link { color: #111; }
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1FL6cxPbfa34K2uvRNAezum4dwvS-lfEI" target="_blank" rel="noopener">Session 3A<br/><span class="session-title">Syntax &amp; discourse</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1qnWBTM9DV82v1t0PZxk8vcphGAHq-Br5" target="_blank" rel="noopener">Session 3B<br/><span class="session-title">Child speech &amp; language acquisition</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1pDQQoFBbBuVD4FQFXWgd-YMnfLf2npcb" target="_blank" rel="noopener">Session 3C<br/><span class="session-title">Copula constructions</span></a></th>
-            <th class="col-session">Session 3D<br/><span class="session-title">Focus, questions &amp; complementizers</span></th>
-            <th class="col-session">Session 3E<br/><span class="session-title">Historical linguistics</span></th>
+            <th class="col-session">Session 3A<br/><span class="session-title">Syntax &amp; discourse</span><br/><a href="https://drive.google.com/drive/folders/1FL6cxPbfa34K2uvRNAezum4dwvS-lfEI" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 3B<br/><span class="session-title">Child speech &amp; language acquisition</span><br/><a href="https://drive.google.com/drive/folders/1qnWBTM9DV82v1t0PZxk8vcphGAHq-Br5" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 3C<br/><span class="session-title">Copula constructions</span><br/><a href="https://drive.google.com/drive/folders/1pDQQoFBbBuVD4FQFXWgd-YMnfLf2npcb" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 3D<br/><span class="session-title">Focus, questions &amp; complementizers</span><br/><a href="https://drive.google.com/drive/folders/1Hw-rXhchWo5jEUuGZRt7CvwPQGmDlxRb" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 3E<br/><span class="session-title">Historical linguistics</span><br/><a href="https://drive.google.com/drive/folders/1wt722UFqOQaXXKGjqeswky9bjymsw3DJ" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -1246,11 +1262,11 @@ details.time-slot > summary a.session-link { color: #111; }
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1UDK9pFtK2axz67oWtbXXZ5AvrCgxhQ15" target="_blank" rel="noopener">Session 4A<br/><span class="session-title">Noun class &amp; agreement</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1fQQ2NV_YGctekgvQHXqlix4thzl1nI8g" target="_blank" rel="noopener">Session 4B<br/><span class="session-title">TAM morphology</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1nckZHYBBa0wXf6yU1IgeKFiXr1dRA2_3" target="_blank" rel="noopener">Session 4C<br/><span class="session-title">Lexical meaning &amp; categories</span></a></th>
-            <th class="col-session">Session 4D<br/><span class="session-title">Computational methods</span></th>
-            <th class="col-session">Session 4E<br/><span class="session-title">Language &amp; culture</span></th>
+            <th class="col-session">Session 4A<br/><span class="session-title">Noun class &amp; agreement</span><br/><a href="https://drive.google.com/drive/folders/1UDK9pFtK2axz67oWtbXXZ5AvrCgxhQ15" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 4B<br/><span class="session-title">TAM morphology</span><br/><a href="https://drive.google.com/drive/folders/1fQQ2NV_YGctekgvQHXqlix4thzl1nI8g" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 4C<br/><span class="session-title">Lexical meaning &amp; categories</span><br/><a href="https://drive.google.com/drive/folders/1nckZHYBBa0wXf6yU1IgeKFiXr1dRA2_3" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 4D<br/><span class="session-title">Computational methods</span><br/><a href="https://drive.google.com/drive/folders/1gUhf4I1ps0axRrxK1krevXczOXXug8T7" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 4E<br/><span class="session-title">Language &amp; culture</span><br/><a href="https://drive.google.com/drive/folders/1s9yukbxSOCbFT7UnqK8z-ICy7dIHGdhI" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -1395,10 +1411,10 @@ details.time-slot > summary a.session-link { color: #111; }
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1wS2uMw-bF_6Jl_cXVsoe-1BYLMaG-xFP" target="_blank" rel="noopener">Session 5A<br/><span class="session-title">Argument structure</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1z9kk3YkIPwD-NEt41K2sGOz2znpIgN3N" target="_blank" rel="noopener">Session 5B<br/><span class="session-title">Semantics: referentiality</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1bbr4jhw-wioR6JDoL-hqvL6LJv5gdY-N" target="_blank" rel="noopener">Session 5C<br/><span class="session-title">Consonants II</span></a></th>
-            <th class="col-session">Session 5D<br/><span class="session-title">Sociolinguistics</span></th>
+            <th class="col-session">Session 5A<br/><span class="session-title">Argument structure</span><br/><a href="https://drive.google.com/drive/folders/1wS2uMw-bF_6Jl_cXVsoe-1BYLMaG-xFP" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 5B<br/><span class="session-title">Semantics: referentiality</span><br/><a href="https://drive.google.com/drive/folders/1z9kk3YkIPwD-NEt41K2sGOz2znpIgN3N" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 5C<br/><span class="session-title">Consonants II</span><br/><a href="https://drive.google.com/drive/folders/1bbr4jhw-wioR6JDoL-hqvL6LJv5gdY-N" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 5D<br/><span class="session-title">Sociolinguistics</span><br/><a href="https://drive.google.com/drive/folders/1660M9Ww1ExKYslB9bDd-zZYv9icG_2dH" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -1541,9 +1557,9 @@ details.time-slot > summary a.session-link { color: #111; }
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/19wc4XD4S8xyvXc61gOAqVUISBf0zDJQu" target="_blank" rel="noopener">Session 6A<br/><span class="session-title">Morphophonology I</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1VCei4oy3WbRDZYwHHon56aaJWE5uyocr" target="_blank" rel="noopener">Session 6B<br/><span class="session-title">Nominal morphology</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/12hrQ370BMM31s866b7rJlu4kKhtGrBv0" target="_blank" rel="noopener">Session 6C<br/><span class="session-title">VP syntax &amp; fronting</span></a></th>
+            <th class="col-session">Session 6A<br/><span class="session-title">Morphophonology I</span><br/><a href="https://drive.google.com/drive/folders/19wc4XD4S8xyvXc61gOAqVUISBf0zDJQu" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 6B<br/><span class="session-title">Nominal morphology</span><br/><a href="https://drive.google.com/drive/folders/1VCei4oy3WbRDZYwHHon56aaJWE5uyocr" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 6C<br/><span class="session-title">VP syntax &amp; fronting</span><br/><a href="https://drive.google.com/drive/folders/12hrQ370BMM31s866b7rJlu4kKhtGrBv0" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
             <th class="col-session">Session 6D<br/><span class="session-title">LaTeX &amp; publishing workshops</span></th>
           </tr>
           <tr class="session-rooms-row">
@@ -1706,11 +1722,11 @@ details.time-slot > summary a.session-link { color: #111; }
         <thead>
           <tr class="session-headers-row">
             <th class="col-time"></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1M1GSyiI1cMM7SSz7dQ58Xh9E48MP8ao3" target="_blank" rel="noopener">Session 7A<br/><span class="session-title">Syntax: extraction</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1AESVk9yr-YSWJbZetMJmoR_LcWa_EeKl" target="_blank" rel="noopener">Session 7B<br/><span class="session-title">Phonology III</span></a></th>
-            <th class="col-session"><a href="https://drive.google.com/drive/folders/1wq3cLwDiJiTeQi4zIYGkdEeG1F3WKADX" target="_blank" rel="noopener">Session 7C<br/><span class="session-title">Morphophonology II</span></a></th>
-            <th class="col-session">Session 7D<br/><span class="session-title">Focus, questions &amp; complementizers</span></th>
-            <th class="col-session">Session 7E<br/><span class="session-title">Semantics: general</span></th>
+            <th class="col-session">Session 7A<br/><span class="session-title">Syntax: extraction</span><br/><a href="https://drive.google.com/drive/folders/1M1GSyiI1cMM7SSz7dQ58Xh9E48MP8ao3" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 7B<br/><span class="session-title">Phonology III</span><br/><a href="https://drive.google.com/drive/folders/1AESVk9yr-YSWJbZetMJmoR_LcWa_EeKl" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 7C<br/><span class="session-title">Morphophonology II</span><br/><a href="https://drive.google.com/drive/folders/1wq3cLwDiJiTeQi4zIYGkdEeG1F3WKADX" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 7D<br/><span class="session-title">Focus, questions &amp; complementizers</span><br/><a href="https://drive.google.com/drive/folders/11f6R_ZxLHOSeYrS0q30QUOK_B7-WXpMu" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
+            <th class="col-session">Session 7E<br/><span class="session-title">Semantics: general</span><br/><a href="https://drive.google.com/drive/folders/1aZ51gCwHQclQABQaEDGkdJN9ybOEsduN" target="_blank" rel="noopener" class="folder-link">&#128193; Session folder</a></th>
           </tr>
           <tr class="session-rooms-row">
             <td></td>
@@ -2173,7 +2189,7 @@ details.time-slot > summary a.session-link { color: #111; }
   </section>
 </div>
   </div>
-  <footer class="page-footer">Last updated: May 12, 2026 at 12:28 PM ET</footer>
+  <footer class="page-footer">Last updated: May 12, 2026 at 12:36 PM ET</footer>
 <script>
 function goToPoster(anchor) {
   document.getElementById('tab-poster').checked = true;
