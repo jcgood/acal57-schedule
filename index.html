@@ -385,11 +385,12 @@ details.time-slot > summary .session-count { color: #333; font-weight: 400; font
 .talk-cancelled .talk-title { color: #444; }
 .poster-cancelled td { opacity: 0.5; color: #444; }
 
-.page-footer {
+.page-updated {
   text-align: center;
   font-size: 0.8rem;
   color: #888;
-  padding: 1.5rem 1rem 1rem;
+  padding: 0.6rem 1rem 0;
+  margin: 0;
 }
 
 @media (max-width: 600px) {
@@ -408,6 +409,7 @@ details.time-slot > summary .session-count { color: #333; font-weight: 400; font
   </style>
 </head>
 <body>
+  <p class="page-updated">Last updated: May 13, 2026 at 12:34 PM ET</p>
   <div class="tab-wrapper">
     <input type="radio" id="tab-acal"   name="schedule-tab">
     <input type="radio" id="tab-banto"  name="schedule-tab" checked>
@@ -2196,7 +2198,6 @@ details.time-slot > summary .session-count { color: #333; font-weight: 400; font
   </section>
 </div>
   </div>
-  <footer class="page-footer">Last updated: May 12, 2026 at 7:38 PM ET</footer>
 <script>
 function goToPoster(anchor) {
   document.getElementById('tab-poster').checked = true;
